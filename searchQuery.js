@@ -3,6 +3,10 @@
 * date 29.08.2017 Berlin
 */
 class SearchQuery{
+    query = '';
+    queryObject = {};
+
+
     objectToQuery(obj){
         if(typeof obj !== 'object')return;
         var query = '';
@@ -34,38 +38,46 @@ class SearchQuery{
             return obj;
         }
         var temp = query.replace('?','').split('&').sort(),
-        obj = this.splitToObject(temp);     
+        tempArr = this.arraySplitter(temp,'=');
+        obj = this.arrayToObject(tempArr);    
         return obj;
     }
     
-    splitToObject(arr,strict=true,trimmer = '='){
-        if(!Array.isArray(arr)){return;}
+    arraySplitter(arr,splitter=''){
+        var result = [];
+        for(let i of arr){
+            result.push(i.split(splitter));
+        }
+        return result;
+    }
+    
+    arrayToObject(arr,strict=true){
         var obj = {},
         keyArr = [],
         valArr = [],
-        c      = 0;
+        c=0;
+        
         arr = arr.sort();
-        for(let i of arr){            
-            var atom = i.split(trimmer),
-            key = decodeURIComponent(atom[0]),
-            val = typeof atom[1] === 'undefined'?'':decodeURIComponent(atom[1]);
-            if(!keyArr.includes(key)){
+        
+        for(let i of arr){
+            // 0 : key , 1 : value
+            if(!keyArr.includes(i[0])){
                 if(c>0){valArr = [];c=0;}
                 c++;               
-                keyArr.push(key);
+                keyArr.push(i[0]);
             }
             if(strict){
-                if(!valArr.includes(val)){
-                    valArr.push(val);
+                if(!valArr.includes(i[1])){
+                    valArr.push(i[1]);
                 } 
             }else{
-                valArr.push(val);
+                valArr.push(i[1]);
             }
-            
-            obj[key] = valArr.length>1?valArr:valArr[0];
+            obj[i[0]] = valArr.length>1?valArr:valArr[0];
         }
         return obj;
     }
+    
     
     get(){
         var query = location.search;
