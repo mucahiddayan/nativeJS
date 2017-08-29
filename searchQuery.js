@@ -1,7 +1,7 @@
 /**
- * author Mücahid Dayan <mucahid@dayan.one>
- * date 29.08.2017 Berlin
- */
+* author Mücahid Dayan <mucahid@dayan.one>
+* date 29.08.2017 Berlin
+*/
 class SearchQuery{
     objectToQuery(obj){
         if(typeof obj !== 'object')return;
@@ -33,13 +33,20 @@ class SearchQuery{
         if(query === ''){
             return obj;
         }
-        var keyArr = [];               
-        temp = query.replace('?','').split('&').sort(),
-        valArr = [],c=0;
-        var newArr;
-        
-        for(let i of temp){            
-            var atom = i.split('='),
+        var temp = query.replace('?','').split('&').sort(),
+        obj = this.splitToObject(temp);     
+        return obj;
+    }
+    
+    splitToObject(arr,strict=true,trimmer = '='){
+        if(!Array.isArray(arr)){return;}
+        var obj = {},
+        keyArr = [],
+        valArr = [],
+        c      = 0;
+        arr = arr.sort();
+        for(let i of arr){            
+            var atom = i.split(trimmer),
             key = decodeURIComponent(atom[0]),
             val = typeof atom[1] === 'undefined'?'':decodeURIComponent(atom[1]);
             if(!keyArr.includes(key)){
@@ -47,7 +54,14 @@ class SearchQuery{
                 c++;               
                 keyArr.push(key);
             }
-            valArr.push(val);
+            if(strict){
+                if(!valArr.includes(val)){
+                    valArr.push(val);
+                } 
+            }else{
+                valArr.push(val);
+            }
+            
             obj[key] = valArr.length>1?valArr:valArr[0];
         }
         return obj;
