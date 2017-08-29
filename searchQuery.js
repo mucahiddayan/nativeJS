@@ -1,3 +1,7 @@
+/**
+ * author Mücahid Dayan <mucahid@dayan.one>
+ * date 29.08.2017 Berlin
+ */
 class SearchQuery{
     objectToQuery(obj){
         if(typeof obj !== 'object')return;
@@ -23,10 +27,6 @@ class SearchQuery{
         }
         return query;
     }
-
-    queryToArray(query){
-
-    }
     
     queryToObject(query){
         var obj = {};
@@ -34,14 +34,14 @@ class SearchQuery{
             return obj;
         }
         var keyArr = [];               
-            temp = query.replace('?','').split('&').sort(),
-            valArr = [],c=0;
+        temp = query.replace('?','').split('&').sort(),
+        valArr = [],c=0;
         var newArr;
-            
+        
         for(let i of temp){            
             var atom = i.split('='),
-                key = decodeURIComponent(atom[0]),
-                val = typeof atom[1] === 'undefined'?'':decodeURIComponent(atom[1]);
+            key = decodeURIComponent(atom[0]),
+            val = typeof atom[1] === 'undefined'?'':decodeURIComponent(atom[1]);
             if(!keyArr.includes(key)){
                 if(c>0){valArr = [];c=0;}
                 c++;               
