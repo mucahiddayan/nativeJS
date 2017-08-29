@@ -3,11 +3,8 @@
 * date 29.08.2017 Berlin
 */
 class SearchQuery{
-    query = '';
-    queryObject = {};
-
-
-    objectToQuery(obj){
+    objectToQuery(obj,strict = false){
+        var encode = strict?encodeURIComponent:encodeURI;
         if(typeof obj !== 'object')return;
         var query = '';
         var c =0;
@@ -18,11 +15,11 @@ class SearchQuery{
             }
             if(Array.isArray(o[1])){
                 for(let [i,v] of o[1].entries()){
-                    query += `${encodeURIComponent(o[0])}=${encodeURIComponent(v)}`;
+                    query += `${encode(o[0])}=${encode(v)}`;
                     query += i<o[1].length-1?'&':'';
                 }
             }else{
-                query += `${encodeURIComponent(o[0])}=${encodeURIComponent(o[1])}`;
+                query += `${encode(o[0])}=${encode(o[1])}`;
             }            
             if(c < entries.length-1 ){
                 query += '&';
@@ -31,15 +28,26 @@ class SearchQuery{
         }
         return query;
     }
+
+    getSearchString(){
+        let wlh = window.location.href,
+            search;
+        if(/#/.test(wlh)){
+            search = wlh.substring(wlh.indexOf('#')+1);
+        }
+        if(/\?/.test(wlh)){
+            search = wlh.substring(wlh.indexOf('?')+1);
+        }
+        return search;
+    }
     
     queryToObject(query){
         var obj = {};
         if(query === ''){
             return obj;
         }
-        var temp = query.replace('?','').split('&').sort(),
-        tempArr = this.arraySplitter(temp,'=');
-        obj = this.arrayToObject(tempArr);    
+        var temp = query.split('&').sort(),
+        obj = this.arrayToObject(this.decodeURIRecursiv(this.arraySplitter(temp,'=')));    
         return obj;
     }
     
@@ -49,6 +57,20 @@ class SearchQuery{
             result.push(i.split(splitter));
         }
         return result;
+    }
+
+    decodeURIRecursiv(arr){
+        var newArr = [];
+        if(Array.isArray(arr)){
+            for(let [i,v] of arr.entries()){
+                newArr[i] = [];
+                newArr[i][0] = decodeURIComponent(v[0]);
+                newArr[i][1] = decodeURIComponent(v[1]);
+            }
+        }else{
+            newArr = decodeURIComponent(arr);
+        }
+        return newArr;
     }
     
     arrayToObject(arr,strict=true){
@@ -80,15 +102,16 @@ class SearchQuery{
     
     
     get(){
-        var query = location.search;
+        var query = this.getSearchString();
         return this.queryToObject(query);
     }
     
     set(obj){
         if(typeof obj !== 'object'){return;}
-        var currentQuery = this.get();   
+        var currentQuery = this.get(); 
         var newQueryObject = Object.assign(currentQuery,obj);
         var newQuery = this.objectToQuery(newQueryObject);
+        
         if(history.pushState){
             history.pushState(newQueryObject,'',newQuery);
         }    
