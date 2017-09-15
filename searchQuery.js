@@ -3,6 +3,13 @@
 * date 29.08.2017 Berlin
 */
 class SearchQuery{
+    
+    /**
+     * returns a query
+     * @param {Object} obj 
+     * @param {boolean} strict 
+     * @returns {string}
+     */
     objectToQuery(obj,strict = false){
         var encode = strict?encodeURIComponent:encodeURI;
         if(typeof obj !== 'object')return;
@@ -29,9 +36,14 @@ class SearchQuery{
         return query;
     }
 
+
+    /**
+     * returns search string from URL
+     * @returns {string}
+     */
     getSearchString(){
         let wlh = window.location.href,
-            search= '';
+        search= '';
         if(/#/.test(wlh)){
             search = wlh.substring(wlh.indexOf('#')+1);
         }
@@ -41,8 +53,15 @@ class SearchQuery{
         return search;
     }
     
+
+    /**
+     * Returns an Object from given query
+     * @param {string} query
+     * @returns {Object}
+     */
     queryToObject(query){
         var obj = {};
+        /*if query empty returns an empty object*/
         if(!query.length){
             return obj;
         }
@@ -51,6 +70,13 @@ class SearchQuery{
         return obj;
     }
     
+
+    /**
+     * returns an array of splitted values of given array
+     * @param {Array} arr 
+     * @param {string} splitter 
+     * @returns {Array}
+     */
     arraySplitter(arr,splitter=''){
         var result = [];
         for(let i of arr){
@@ -58,7 +84,13 @@ class SearchQuery{
         }
         return result;
     }
+    
 
+    /**
+     * returns an array with decoded values
+     * @param {Array} arr 
+     * @returns {Array}
+     */
     decodeURIRecursiv(arr){
         var newArr = [];
         if(Array.isArray(arr)){
@@ -73,6 +105,13 @@ class SearchQuery{
         return newArr;
     }
     
+
+    /**
+     * returns an Object from given array
+     * @param {Array} arr 
+     * @param {booelan} strict 
+     * @returns {Object}
+     */
     arrayToObject(arr,strict=true){
         var obj = {},
         keyArr = [],
@@ -99,13 +138,25 @@ class SearchQuery{
         }
         return obj;
     }
-    
-    
+        
+
+    /**
+     * returns a search string as an object
+     * @returns {Object} 
+     *                  asO : as object
+     *                  asS : as string
+     */
     get(){
         var query = this.getSearchString();
         return this.queryToObject(query);
     }
     
+
+    /**
+     * sets a parameters to search string of URL
+     * @param {Object} obj
+     * @returns {void} 
+     */
     set(obj){
         if(typeof obj !== 'object'){return;}
         var currentQuery = this.get(); 
@@ -117,10 +168,16 @@ class SearchQuery{
         }    
     }
     
-    delete(){
+    
+    /**
+     * deletes all search params from URL
+     * @returns {void}
+     */
+    deleteAll(){
         if(history.pushState){
             var uri = window.location.toString();
             window.history.replaceState({},'',uri.substring(0, uri.indexOf("?")));
         }  
     }
+
 }
