@@ -16,17 +16,24 @@ class SearchQuery{
         var query = '';
         var c =0;
         var entries = Object.entries(obj);
+        
+        var queryItem = function(k,v){
+            let query = '';
+            query += encode(k);
+            query += typeof v !== 'undefined' && v !== null && v.length ? `=${encode(v)}` : '';
+            return query;
+        }
         for(let o of entries){
             if(c === 0){
                 query += '?';    
             }
             if(Array.isArray(o[1])){
                 for(let [i,v] of o[1].entries()){
-                    query += `${encode(o[0])}=${encode(v)}`;
+                    query += queryItem(o[0],v);/* `${encode(o[0])}=${encode(v)}` */;
                     query += i<o[1].length-1?'&':'';
                 }
             }else{
-                query += `${encode(o[0])}=${encode(o[1])}`;
+                query += queryItem(o[0],o[1]);/* `${encode(o[0])}=${encode(o[1])}` */;
             }            
             if(c < entries.length-1 ){
                 query += '&';
@@ -35,6 +42,8 @@ class SearchQuery{
         }
         return query;
     }
+    
+    
     
     
     /**
@@ -131,10 +140,19 @@ class SearchQuery{
             }
             if(strict){
                 if(!valArr.includes(i[1])){
-                    valArr.push(i[1]);
+                    if( i[1] === 'undefined'){
+                        valArr.push(null);
+                    }else{
+                        valArr.push(i[1]);
+                    }
+                    
                 } 
             }else{
-                valArr.push(i[1]);
+                if( i[1] === 'undefined'){
+                    valArr.push(null);
+                }else{
+                    valArr.push(i[1]);
+                }
             }
             obj[i[0]] = valArr.length>1?valArr:valArr[0];
         }
@@ -160,6 +178,9 @@ class SearchQuery{
                 for( let a in temp){
                     obj[a] = temp[a];
                 }
+            }
+            if(typeof v == 'string'){
+                obj[v] = '';
             }
         }
         return obj;
@@ -211,11 +232,21 @@ class SearchQuery{
     
     /**
     * deletes an etry with given key     * 
-    * @param {string} key 
+    * @param {string} key
+    * @returns {Object} new query object    
     */
     delete(key){
-        var currentQuery = this.get().asO;
-        
+        var currentQuery = this.get();
+        if(Array.isArray(key)){
+            for(let o of key){
+                delete currentQuery[o];
+            }
+        }else{
+            delete currentQuery[key];
+        }
+        this.deleteAll();
+        this.set(currentQuery);
+        return currentQuery;
     }
     
     /**
