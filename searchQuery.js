@@ -1,15 +1,15 @@
 /**
-* author Mücahid Dayan <mucahid@dayan.one>
-* date 29.08.2017 Berlin
-*/
+ * @author Mücahid Dayan <mucahid@dayan.one>
+ * @date 29.08.2017 Berlin
+  */
 class SearchQuery{
     
     /**
-    * returns a query
-    * @param {Object} obj 
-    * @param {boolean} strict 
-    * @returns {string}
-    */
+     * @returns a query
+     * @param {Object} obj 
+     * @param {boolean} strict 
+     * @returns {string}
+      */
     objectToQuery(obj,strict = false){
         var encode = strict?encodeURIComponent:encodeURI;
         if(typeof obj !== 'object')return;
@@ -29,11 +29,11 @@ class SearchQuery{
             }
             if(Array.isArray(o[1])){
                 for(let [i,v] of o[1].entries()){
-                    query += queryItem(o[0],v);/* `${encode(o[0])}=${encode(v)}` */;
+                    query += queryItem(o[0],v);/  * @`${encode(o[0])}=${encode(v)}`   */;
                     query += i<o[1].length-1?'&':'';
                 }
             }else{
-                query += queryItem(o[0],o[1]);/* `${encode(o[0])}=${encode(o[1])}` */;
+                query += queryItem(o[0],o[1]);/  * @`${encode(o[0])}=${encode(o[1])}`   */;
             }            
             if(c < entries.length-1 ){
                 query += '&';
@@ -43,13 +43,10 @@ class SearchQuery{
         return query;
     }
     
-    
-    
-    
     /**
-    * returns search string from URL
-    * @returns {string}
-    */
+      * @returns search string from URL
+      * @returns {string}
+      */
     getSearchString(){
         let wlh = window.location.href,
         search= '';
@@ -62,15 +59,14 @@ class SearchQuery{
         return search;
     }
     
-    
     /**
-    * Returns an Object from given query
-    * @param {string} query
-    * @returns {Object}
-    */
+      * @Returns an Object from given query
+      * @param {string} query
+      * @returns {Object}
+      */
     queryToObject(query){
         var obj = {};
-        /*if query empty returns an empty object*/
+        /*if query empty returns an empty object  */
         if(!query.length){
             return obj;
         }
@@ -79,13 +75,12 @@ class SearchQuery{
         return obj;
     }
     
-    
     /**
-    * returns an array of splitted values of given array
-    * @param {Array} arr 
-    * @param {string} splitter 
-    * @returns {Array}
-    */
+      * @returns an array of splitted values of given array
+      * @param {Array} arr 
+      * @param {string} splitter 
+      * @returns {Array}
+      */
     arraySplitter(arr,splitter=''){
         var result = [];
         for(let i of arr){
@@ -94,12 +89,11 @@ class SearchQuery{
         return result;
     }
     
-    
     /**
-    * returns an array with decoded values
-    * @param {Array} arr 
-    * @returns {Array}
-    */
+      * @returns an array with decoded values
+      * @param {Array} arr 
+      * @returns {Array}
+      */
     decodeURIRecursiv(arr){
         var newArr = [];
         if(Array.isArray(arr)){
@@ -114,15 +108,14 @@ class SearchQuery{
         return newArr;
     }
     
-    
     /**
-    * returns an Object from given two dimensional array
-    * arr[i][0] : keys of object  **i** : from For-Loop
-    * arr[i][1] : value of object
-    * @param {Array[][]} arr 
-    * @param {booelan} strict 
-    * @returns {Object}
-    */
+      * @returns an Object from given two dimensional array
+      * @arr[i][0] : keys of object  **i * @ * @: from For-Loop
+      * @arr[i][1] : value of object
+      * @param {array[][]} arr 
+      * @param {booelan} strict 
+      * @returns {Object}
+      */
     twoDimArrToObj(arr,strict=true){
         var obj = {},
         keyArr = [],
@@ -160,9 +153,9 @@ class SearchQuery{
     }
     
     /**
-    * returns an merged object
-    * @param {parameters} mix 
-    */
+      * @returns an merged object
+      * @param {parameters} mix 
+      */
     mixedAssign(...mix){
         var obj = {};	
         for(let [i,v] of mix.entries()){
@@ -186,12 +179,11 @@ class SearchQuery{
         return obj;
     }
     
-    
     /**
-    * returns an object from given array
-    * sets value of object to empty string ''
-    * @param {Array[]} arr 
-    */
+      * @returns an object from given array
+      * @sets value of object to empty string ''
+      * @param {array[]} arr 
+      */
     arrayToObj(arr){
         var obj = {};
         for(let i of arr){
@@ -200,13 +192,10 @@ class SearchQuery{
         return obj;
     }
     
-    
     /**
-    * returns a search string as an object
-    * @returns {Object} 
-    *                  asO : as object
-    *                  asS : as string
-    */
+      * @returns a search string as an object
+      * @returns {Object} 
+      */
     get(){
         var query = this.getSearchString();
         return this.queryToObject(query);
@@ -214,10 +203,10 @@ class SearchQuery{
     
     
     /**
-    * sets a parameters to search string of URL
-    * @param {Object} obj
-    * @returns {void} 
-    */
+     * @sets a parameters to search string of URL
+     * @param {...Object} obj
+     * @returns {void} 
+     */
     set(...ob){
         // if(typeof obj !== 'object'){return;}
         var obj = this.mixedAssign(...ob);
@@ -231,10 +220,10 @@ class SearchQuery{
     }
     
     /**
-    * deletes an etry with given key     * 
-    * @param {string} key
-    * @returns {Object} new query object    
-    */
+     * @deletes an etry with given key      * @
+     * @param {string} key
+     * @returns {Object} new query object    
+     */
     delete(key){
         var currentQuery = this.get();
         if(Array.isArray(key)){
@@ -250,14 +239,13 @@ class SearchQuery{
     }
     
     /**
-    * deletes all search params from URL
-    * @returns {void}
-    */
+     * @deletes all search params from URL
+     * @returns {void}
+     */
     deleteAll(){
         if(history.pushState){
             var uri = window.location.toString();
             window.history.replaceState({},'',uri.substring(0, uri.indexOf("?")));
         }  
-    }
-    
+    }    
 }
