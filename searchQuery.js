@@ -3,6 +3,12 @@
 * date 29.08.2017 Berlin
 */
 class SearchQuery{
+    /**
+     * returns a query
+     * @param {Object} obj 
+     * @param {boolean} strict 
+     * @returns {string}
+     */
     objectToQuery(obj,strict = false){
         var encode = strict?encodeURIComponent:encodeURI;
         if(typeof obj !== 'object')return;
@@ -15,11 +21,13 @@ class SearchQuery{
             }
             if(Array.isArray(o[1])){
                 for(let [i,v] of o[1].entries()){
-                    query += `${encode(o[0])}=${encode(v)}`;
+                    query += `${encode(o[0])}`;
+                    query += typeof v !== 'undefined' && v !== null && v.length ? `=${encode(v)}`:'';
                     query += i<o[1].length-1?'&':'';
                 }
             }else{
-                query += `${encode(o[0])}=${encode(o[1])}`;
+                query += `${encode(o[0])}`;
+                query += typeof o[1] !== 'undefined' && o[1] !== null && o[1].length ? `=${encode(o[1])}`:'';
             }            
             if(c < entries.length-1 ){
                 query += '&';
@@ -29,6 +37,23 @@ class SearchQuery{
         return query;
     }
 
+    /**
+     * returns a query from given array
+     * @param {Array} arr 
+     * @returns {string}
+     */
+    arrayToQuery(arr){
+        if(!Array.isArray(arr)){
+            return;
+        }
+        var query = '';
+
+    }
+
+    /**
+     * returns search string from URL
+     * @returns {string}
+     */
     getSearchString(){
         let wlh = window.location.href,
             search= '';
@@ -41,6 +66,11 @@ class SearchQuery{
         return search;
     }
     
+    /**
+     * Returns an Object from given query
+     * @param {string} query
+     * @returns {Object}
+     */
     queryToObject(query){
         var obj = {};
         if(!query.length){
@@ -51,6 +81,12 @@ class SearchQuery{
         return obj;
     }
     
+    /**
+     * returns an array of splitted values of given array
+     * @param {Array} arr 
+     * @param {string} splitter 
+     * @returns {Array}
+     */
     arraySplitter(arr,splitter=''){
         var result = [];
         for(let i of arr){
@@ -59,6 +95,11 @@ class SearchQuery{
         return result;
     }
 
+    /**
+     * returns an array with decoded values
+     * @param {Array} arr 
+     * @returns {Array}
+     */
     decodeURIRecursiv(arr){
         var newArr = [];
         if(Array.isArray(arr)){
@@ -73,6 +114,12 @@ class SearchQuery{
         return newArr;
     }
     
+    /**
+     * returns an Object from given array
+     * @param {Array} arr 
+     * @param {booelan} strict 
+     * @returns {Object}
+     */
     arrayToObject(arr,strict=true){
         var obj = {},
         keyArr = [],
@@ -100,27 +147,64 @@ class SearchQuery{
         return obj;
     }
     
-    
+    /**
+     * returns a search string as an object
+     * @returns {Object} 
+     *                  asO : as object
+     *                  asS : as string
+     */
     get(){
         var query = this.getSearchString();
-        return this.queryToObject(query);
+        return {
+            asO:this.queryToObject(query),
+            asS:query
+        };
     }
     
-    set(obj){
-        if(typeof obj !== 'object'){return;}
-        var currentQuery = this.get(); 
+    /**
+     * sets a parameters to search string of URL
+     * @param {Object} obj
+     * @returns {void} 
+     */
+    set(...obj){
+        // if(typeof obj !== 'object'){return;}
+        if(Array.isArray(obj)){
+            obj = this.arrayToObject(obj);
+        }   
+        var currentQuery = this.get().asO; 
+        console.log(obj);
         var newQueryObject = Object.assign(currentQuery,obj);
+        console.log(newQueryObject);
         var newQuery = this.objectToQuery(newQueryObject);
+        console.log(newQuery);
         
         if(history.pushState){
             history.pushState(newQueryObject,'',newQuery);
         }    
     }
     
-    delete(){
+    /**
+     * deletes all search params from URL
+     * @returns {void}
+     */
+    deleteAll(){
         if(history.pushState){
             var uri = window.location.toString();
             window.history.replaceState({},'',uri.substring(0, uri.indexOf("?")));
         }  
+    }
+
+    /**
+     * returns an object from given array
+     * keys of object = keys of array
+     * values of object = null
+     * @param {Array} arr 
+     */
+    arrayToObject(arr){
+        var obj = {};
+        for(let [i,v] of arr.entries()){
+            obj[v] = '';
+        }
+        return obj;
     }
 }
