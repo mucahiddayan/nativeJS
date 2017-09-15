@@ -66,7 +66,7 @@ class SearchQuery{
             return obj;
         }
         var temp = query.split('&').sort(),
-        obj = this.arrayToObject(this.decodeURIRecursiv(this.arraySplitter(temp,'=')));    
+        obj = this.twoDimArrToObj(this.decodeURIRecursiv(this.arraySplitter(temp,'=')));    
         return obj;
     }
     
@@ -107,12 +107,14 @@ class SearchQuery{
     
 
     /**
-     * returns an Object from given array
-     * @param {Array} arr 
+     * returns an Object from given two dimensional array
+     * arr[i][0] : keys of object  **i** : from For-Loop
+     * arr[i][1] : value of object
+     * @param {Array[][]} arr 
      * @param {booelan} strict 
      * @returns {Object}
      */
-    arrayToObject(arr,strict=true){
+    twoDimArrToObj(arr,strict=true){
         var obj = {},
         keyArr = [],
         valArr = [],
@@ -138,6 +140,8 @@ class SearchQuery{
         }
         return obj;
     }
+
+    
         
 
     /**
@@ -168,7 +172,7 @@ class SearchQuery{
         }    
     }
     
-    
+
     /**
      * deletes all search params from URL
      * @returns {void}
