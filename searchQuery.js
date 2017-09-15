@@ -31,7 +31,7 @@ class SearchQuery{
 
     getSearchString(){
         let wlh = window.location.href,
-            search;
+            search= '';
         if(/#/.test(wlh)){
             search = wlh.substring(wlh.indexOf('#')+1);
         }
@@ -43,7 +43,7 @@ class SearchQuery{
     
     queryToObject(query){
         var obj = {};
-        if(query === ''){
+        if(!query.length){
             return obj;
         }
         var temp = query.split('&').sort(),
