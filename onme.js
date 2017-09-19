@@ -22,7 +22,7 @@ class Onme{
                 transition:.5
             },
             label:{
-                selector:'id'
+                selector:'self'
             },
             box:{
                 css:{
@@ -31,7 +31,9 @@ class Onme{
                     top      : 100,
                     zIndex   : 10,
                     padding  : 10,
-                    backgroundColor : 'rgba(0,0,0,.5)'
+                    backgroundColor : 'rgba(0,0,0,.5)',
+                    height   : 300,
+                    overflow : 'auto'
                 }
             }
         };
@@ -65,13 +67,22 @@ class Onme{
             
             if(this.settings.label.selector.toLowerCase() == 'id'){
                 label = e.id;
+                console.log(1);
             }
-            else if(/data/i.test(this.settings.label.selector)){
+            else if(/^data/i.test(this.settings.label.selector)){
                 var data = this.settings.label.split(/\-(.+)/);
                 label = this.dataset[data[1]];
+                console.log(2);
+            }else if(this.settings.label.selector.replace(/\s/ig,'') == ''){
+                label = e.id;
+                console.log(3);
+            }else if(/^self$/.test(this.settings.label.selector)){
+                label = e.innerText;
+                console.log(4);
             }
             else{
                 label = e.querySelector(this.settings.label.selector).innerText;
+                console.log(5);
             }
             console.log(this.settings.label.selector,label);
             nav += `<li class="onme nav-item" id="${counter}">${label}</li>`;
@@ -109,7 +120,7 @@ class Onme{
             });
 
             index = index == -1 ? items.length-1:index;
-            console.log(index,items[index]);
+            // console.log(index,items[index]);
             this
             .addClass(items[index],'active')
             .removeClass(this.siblings(items[index]),'active');
@@ -117,7 +128,8 @@ class Onme{
         
         [].map.call(items,e=>{
             var offsetTop = positions[e.id];
-            e.addEventListener('click',this.goTo(offsetTop));           
+            console.log(offsetTop);
+            e.addEventListener('click',()=>this.goTo(offsetTop));           
         });
         
         let styleCSS = `<style type="text/css">
@@ -149,8 +161,8 @@ class Onme{
         var rect = el.getBoundingClientRect();
         
         return {
-            top: rect.top + document.body.scrollTop,
-            left: rect.left + document.body.scrollLeft
+            top: rect.top + document.body.scrollTop+window.scrollY,
+            left: rect.left + document.body.scrollLeft+window.scrollX
         }
     }
     
