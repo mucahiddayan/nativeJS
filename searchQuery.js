@@ -3,6 +3,10 @@
 * date 29.08.2017 Berlin
 */
 class SearchQuery{
+<<<<<<< HEAD
+=======
+    
+>>>>>>> comments added
     /**
      * returns a query
      * @param {Object} obj 
@@ -37,6 +41,7 @@ class SearchQuery{
         return query;
     }
 
+<<<<<<< HEAD
     /**
      * returns a query from given array
      * @param {Array} arr 
@@ -49,6 +54,8 @@ class SearchQuery{
         var query = '';
 
     }
+=======
+>>>>>>> comments added
 
     /**
      * returns search string from URL
@@ -56,7 +63,7 @@ class SearchQuery{
      */
     getSearchString(){
         let wlh = window.location.href,
-            search= '';
+        search= '';
         if(/#/.test(wlh)){
             search = wlh.substring(wlh.indexOf('#')+1);
         }
@@ -66,6 +73,10 @@ class SearchQuery{
         return search;
     }
     
+<<<<<<< HEAD
+=======
+
+>>>>>>> comments added
     /**
      * Returns an Object from given query
      * @param {string} query
@@ -73,6 +84,7 @@ class SearchQuery{
      */
     queryToObject(query){
         var obj = {};
+        /*if query empty returns an empty object*/
         if(!query.length){
             return obj;
         }
@@ -81,6 +93,10 @@ class SearchQuery{
         return obj;
     }
     
+<<<<<<< HEAD
+=======
+
+>>>>>>> comments added
     /**
      * returns an array of splitted values of given array
      * @param {Array} arr 
@@ -94,6 +110,7 @@ class SearchQuery{
         }
         return result;
     }
+    
 
     /**
      * returns an array with decoded values
@@ -114,6 +131,10 @@ class SearchQuery{
         return newArr;
     }
     
+<<<<<<< HEAD
+=======
+
+>>>>>>> comments added
     /**
      * returns an Object from given array
      * @param {Array} arr 
@@ -146,7 +167,12 @@ class SearchQuery{
         }
         return obj;
     }
+<<<<<<< HEAD
     
+=======
+        
+
+>>>>>>> comments added
     /**
      * returns a search string as an object
      * @returns {Object} 
@@ -161,11 +187,16 @@ class SearchQuery{
         };
     }
     
+<<<<<<< HEAD
+=======
+
+>>>>>>> comments added
     /**
      * sets a parameters to search string of URL
      * @param {Object} obj
      * @returns {void} 
      */
+<<<<<<< HEAD
     set(...obj){
         // if(typeof obj !== 'object'){return;}
         if(Array.isArray(obj)){
@@ -173,6 +204,11 @@ class SearchQuery{
         }   
         var currentQuery = this.get().asO; 
         console.log(obj);
+=======
+    set(obj){
+        if(typeof obj !== 'object'){return;}
+        var currentQuery = this.get(); 
+>>>>>>> comments added
         var newQueryObject = Object.assign(currentQuery,obj);
         console.log(newQueryObject);
         var newQuery = this.objectToQuery(newQueryObject);
@@ -183,6 +219,10 @@ class SearchQuery{
         }    
     }
     
+<<<<<<< HEAD
+=======
+    
+>>>>>>> comments added
     /**
      * deletes all search params from URL
      * @returns {void}
@@ -194,6 +234,7 @@ class SearchQuery{
         }  
     }
 
+<<<<<<< HEAD
     /**
      * returns an object from given array
      * keys of object = keys of array
@@ -207,4 +248,6 @@ class SearchQuery{
         }
         return obj;
     }
+=======
+>>>>>>> comments added
 }
