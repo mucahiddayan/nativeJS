@@ -195,16 +195,17 @@ class Onme{
         let onScreen = this.positions.filter(e=>{
             return  e >= scrollY && e <= scrollY + this.wInner;
         });
-        let index = this.positions.findIndex(e=> e == this.min(onScreen));
+        let first = this.positions.findIndex(e=> e == this.min(onScreen));
+        // let last = this.positions.findIndex(e=> e == this.max(onScreen));
         console.group('log');
-        console.log(onScreen);
-        console.log(this.min(onScreen));
-        console.log(index);
-        console.log(temp.splice(index,onScreen.length));
-        console.log(temp);
+        console.log('onscreen',onScreen);
+        console.log('min of onscreen',this.min(onScreen));
+        console.log('index',first);
+        console.log('removed',temp.splice(first,onScreen.length), typeof temp.splice(first,last));
+        console.log('temp',temp,typeof temp);
         console.groupEnd('log');
         return { 
-            removed: temp.splice(this.min(onScreen),onScreen.length),
+            removed: temp.splice(first,onScreen.length),
             stay   : temp
         };        
     }
@@ -216,6 +217,10 @@ class Onme{
      */
     min(arr){
         return arr.sort((a,b)=>a>b)[0];
+    }
+
+    max(arr){
+        return arr.sort((a,b)=>a<b)[0];
     }
 
     /************************** jQuery Replacement **************************/
