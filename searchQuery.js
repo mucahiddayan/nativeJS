@@ -8,9 +8,10 @@
      * @returns a query
      * @param {Object} obj 
      * @param {boolean} strict 
+     * @param {boolean} row  if row true , query string will be returned without ? at begin
      * @returns {string}
       */
-    objectToQuery(obj,strict = false){
+    objectToQuery(obj,strict = false,raw=false){
         var encode = strict?encodeURIComponent:encodeURI;
         if(typeof obj !== 'object')return;
         var query = '';
@@ -24,7 +25,7 @@
             return query;
         }
         for(let o of entries){
-            if(c === 0){
+            if(c === 0 && !raw){
                 query += '?';    
             }
             if(Array.isArray(o[1])){
