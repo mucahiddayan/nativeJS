@@ -17,16 +17,20 @@ var Weather = function(){
         forecast    : '#forecast',
         wind        : '#wind',      
     },
-    images = {
-        rain : '',
-        showers:'',
-        partlyCloudy: '',
-        mostlyCloudy:'',
-        scatteredShowers: '',
-
+    __imagePositions = {
+        rain : [5,3],//'-75px -310px',
+        showers:[3,3],//'-250px -310px',
+        partlyCloudy:[5,2], //'-75px -390px',
+        mostlyCloudy:[5,2],//'-75px -390px',
+        mostlySunny:[4,5],//'-157px -127px',
+        scatteredShowers:[2,4],// '-350px -220px',
+        sunny : [5,5],// '-67px -127px',
+        thunderstorms : [2,1],// '-350px -475px'
+        
     },
+    __imageSrc = 'images/weathericons.svg',
     __forecastLimit = 10,
-
+    
     __results = [],
     __result;
     
@@ -68,23 +72,29 @@ var Weather = function(){
     }
     
     this.display = function(options){
-        var options = arguments.length > 0 && arguments[0] !== undefined ? Object.assign(__defaultDisplaySettings,arguments[0]) : __defaultDisplaySettings;
+        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : __defaultDisplaySettings;
         console.log(getUrl());
         if(sendQuery()){
             sendQuery().then(res=>{
+                if(res.query.results == null){console.warn(`No results for "${__city}"`);return;}
                 var values = extractWeatherInformations(res);
                 console.log(values);               
                 toDisplay(options,values);
             });
         }
     }
-
+    
     this.getQuery = function(){
         sendQuery().then(e=>console.log(e));
     }
-
+    
     var extractWeatherInformations = function(json){
-        var temp = json.query.results.channel;
+        try{
+            var temp = json.query.results.channel;
+        }catch(e){
+            console.warn(e);
+            return;
+        }
         return {
             astronomy   : temp.astronomy,
             atmosphere  : temp.atmosphere,
@@ -94,48 +104,90 @@ var Weather = function(){
         };
     }
 
+    String.prototype.toCamelCase = function(){
+        return /\s/.test(this)?this.split(' ').reduce((f,s)=>f[0].toLowerCase()+f.substr(1,f.length-1)+s[0].toUpperCase()+s.substr(1,s.length-1)):this.toLowerCase();
+    }
+    
+    /**
+     * 
+     * @param {object<forecast>[]} forecast 
+     */
     var forecast = function(forecast){
-        var box  = '<div id="forecast-wrapper"><div id="forecast">';
-            for(var day in forecast){
-               if(day <= __forecastLimit){
-                   box += `<div class="forecast-item">
-                                <div class="forecast-img">${forecast[day].text}</div>             
-                                <div class="forecast-day">${forecast[day].day}</div>
-                                <div class="forecast-date">${forecast[day].date}</div>
-                                <div class="forecast-high">${forecast[day].high}</div>
-                                <div class="forecast-low">${forecast[day].low}</div>
-                           </div>`;
-               }
+        var box = boxStart('forecast');
+        for(var day in forecast){
+            if(day <= __forecastLimit){
+                box += `<div class="forecast-item">
+                ${getImage(forecast[day].text)}           
+                <div class="forecast-day">${forecast[day].day}</div>
+                <div class="forecast-date">${forecast[day].date}</div>
+                <div class="forecast-high">${forecast[day].high}</div>
+                <div class="forecast-low">${forecast[day].low}</div>
+                </div>`;
             }
-            box += "</div></div>"; // forecast-and wrapper end
-    }
-
-    var astronomy = function(){
-        
-    }
-
-    var toDisplay = function(obj,values){
-        var iterate = function(ob){
-            var t = '';
-            for(let o in ob){
-                t += `${ob[o]}`;
-            }
-            t+='</br>';
-            return t;
         }
+        box += boxEnd();
+        return box;
+    }
+    
+    var astronomy = function(astronomy){
+        var box = boxStart('astronomy');
+        box+= `<div class="sunrise">
+        ${getImage('sunrise')}
+        <div id="text">${astronomy.sunrise}</div>
+        </div>
+        <div class="sunset">
+        <div id="img">${getImage('sunset')}</div>
+        <div id="text">${astronomy.sunset}</div>
+        </div>`;
+        box+= boxEnd();
+        return box;
+    }
+    
+    var atmosphere = function(){
 
+    }
+
+    var getImage = function(id){
+        var pos = __imagePositions[id.toCamelCase()];
+        if(typeof pos == 'undefined'){
+            console.warn(`There is no image for ${id.toCamelCase()}`);
+            pos = [4,1];
+        }
+        
+        return `<div title="${id}" class="weather-icon" style="background:url('${__imageSrc}') ${getImgPosition(pos)};width:80px;height:80px;"></div>`;
+    }
+
+    var getImgPosition = function(pos){
+        var start = {x:160,y:135}
+        return `${(pos[0]-1)*95+start.x}px ${(pos[1]-1)*87+start.y}px`;
+    }
+    
+    var boxStart = function(id){
+        return `<div id="${id}-wrapper"><div id="${id}">`;
+    }
+    
+    var boxEnd = function(){
+        return '</div></div>';
+    }
+    
+    var toDisplay = function(obj,values){
         for(let o in __defaultDisplaySettings){
-            var text = `${o} : `;          
-            if(typeof values[o] == 'object' && !Array.isArray(values[o])){                
-                text += iterate(values[o]);
-            }else if(Array.isArray(values[o])){
-                for(i in values[o]){
-                    text += iterate(values[o][i]);
-                }
-            }else{
-                text += values[o];
+            var text;
+            switch(o){
+                case 'forecast':
+                text = forecast(values[o]);
+                break;
+                case 'atmosphere':
+                text = atmosphere(values[o]);
+                break;
+                case 'astronomy':
+                text = astronomy(values[o]);
+                break;
+                default:
+                text = '';
+                break;
             }
-            document.querySelector(obj[o]).innerHTML = text;                      
+            if(document.querySelector(obj[o]))document.querySelector(obj[o]).innerHTML = text;                      
         }
     }
 }
