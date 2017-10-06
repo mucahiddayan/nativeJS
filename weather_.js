@@ -171,8 +171,10 @@ var Weather = function(){
     }
     
     var toDisplay = function(obj,values){
-        for(let o in __defaultDisplaySettings){
+        for(let o in obj){
+            if(obj.length >= __defaultDisplaySettings.length){console.warn('Flew over');return;}
             var text;
+            console.log(o);
             switch(o){
                 case 'forecast':
                 text = forecast(values[o]);
@@ -187,7 +189,10 @@ var Weather = function(){
                 text = '';
                 break;
             }
-            if(document.querySelector(obj[o]))document.querySelector(obj[o]).innerHTML = text;                      
+            if(document.querySelector(obj[o])){
+                document.querySelector(obj[o]).innerHTML = text;
+                console.log(document.querySelector(obj[o]));
+            }                      
         }
     }
 }
