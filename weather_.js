@@ -52,8 +52,8 @@ var Weather = function(){
         });
     }    
     
-    var fahrenheitToCelcius = function(f){
-        return (f-32) * 5/9;
+    var fahrenheitToCelcius = function(f,round=1){
+        return ((f-32) * 5/9).toFixed(round);
     }
     
     //****************PUBLIC FUNCTIONS****************//    
@@ -65,6 +65,10 @@ var Weather = function(){
         __isLocationSet = true;
         
         return this;     
+    }
+
+    this.setApiUrl = function(url){
+        __apiUrl = url;
     }
     
     this.setForecastLimit = function(limit){
@@ -120,8 +124,8 @@ var Weather = function(){
                 ${getImage(forecast[day].text)}           
                 <div class="forecast-day">${forecast[day].day}</div>
                 <div class="forecast-date">${forecast[day].date}</div>
-                <div class="forecast-high">${forecast[day].high}</div>
-                <div class="forecast-low">${forecast[day].low}</div>
+                <div class="forecast-high">${fahrenheitToCelcius(forecast[day].high)}°C</div>
+                <div class="forecast-low">${fahrenheitToCelcius(forecast[day].low)}°C</div>
                 </div>`;
             }
         }
