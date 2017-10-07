@@ -16,15 +16,16 @@
             margin: 5px;
             padding: 5px;
         }
-
+        
         .weather-icon{
             box-shadow: 0px 0px 1px 0px #333;
             transition:background-position .5s;
         }
     </style>
     <script type="text/javascript">
+        var v;
         document.addEventListener('DOMContentLoaded',_=>{
-            var v = new Weather();
+            v = new Weather();
             document.getElementById('city').addEventListener('keypress',event => {
                 
                 if(event.key == 'Enter'){
@@ -33,10 +34,16 @@
             });
         });
         
+        function getWeatherFromCurrentPosition(){
+            navigator.geolocation.getCurrentPosition(e=>{
+                let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.coords.latitude},${e.coords.longitude}`;
+                fetch(url).then(e=>e.json()).then(e=> v.setLocation(e.results[1].formatted_address).display())
+            })
+        }
     </script>
 </head>
 <body>
-    <input type="text" id="city"/>
+    <input type="text" id="city"/><button onclick="getWeatherFromCurrentPosition();">Current Position</button>
     <div>
         <div id="forecast"    ></div>
         <div id="atmosphere"  ></div>
