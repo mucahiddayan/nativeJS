@@ -30,6 +30,9 @@ var Weather = function(){
     },
     __imageSrc = 'images/weathericons.svg',
     __forecastLimit = 10,
+    __iconHeight = 95,
+    __iconWidth = 87,
+    __iconStartPos = {x:160,y:135},
     
     __results = [],
     __result;
@@ -57,14 +60,31 @@ var Weather = function(){
     }
     
     //****************PUBLIC FUNCTIONS****************//    
-    this.setLocation = function(){
-        var city = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Berlin';
-        var countryCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'de';
+    this.setLocation = function(city= 'Berlin',countryCode = 'de'){
         __city = city;
         __countryCode = countryCode;
         __isLocationSet = true;
         
         return this;     
+    }
+
+    this.setImgSize = function(imgSize){
+        __imgSize = imgSize;
+    }
+
+    this.setImgSrc = function(imgSrc){
+        __imageSrc = imgSrc;
+    }
+
+    this.setIconHeight = function(iconHeight){
+        __iconHeight = iconHeight;
+    }
+
+    this.setIconWidth = function(iconWidth){
+        __iconWidth = iconWidth;
+    }
+    this.setStartPos = function(startPos){
+        __iconStartPos = Object.assign(__iconStartPos,startPos);
     }
 
     this.setApiUrl = function(url){
@@ -75,9 +95,9 @@ var Weather = function(){
         __forecastLimit = limit;
     }
     
-    this.display = function(options){
-        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : __defaultDisplaySettings;
+    this.display = function(options = __defaultDisplaySettings){        
         console.log(getUrl());
+        console.log(options);
         if(sendQuery()){
             sendQuery().then(res=>{
                 if(res.query.results == null){console.warn(`No results for "${__city}"`);return;}
@@ -147,8 +167,9 @@ var Weather = function(){
         return box;
     }
     
-    var atmosphere = function(){
-
+    var atmosphere = function(atmosphere){
+        var text = `${atmosphere.humidity} ${atmosphere.pressure} ${atmosphere.rising} ${atmosphere.visibility}`;
+        return text;
     }
 
     var getImage = function(id){
@@ -162,8 +183,7 @@ var Weather = function(){
     }
 
     var getImgPosition = function(pos){
-        var start = {x:160,y:135}
-        return `${(pos[0]-1)*95+start.x}px ${(pos[1]-1)*87+start.y}px`;
+        return `${(pos[0]-1)*__iconWidth+__iconStartPos.x}px ${(pos[1]-1)*__iconHeight+__iconStartPos.y}px`;
     }
     
     var boxStart = function(id){
@@ -173,12 +193,16 @@ var Weather = function(){
     var boxEnd = function(){
         return '</div></div>';
     }
+
+    var temp = function(temp){
+        return temp+'°C';
+    }
     
     var toDisplay = function(obj,values){
         for(let o in obj){
             if(obj.length >= __defaultDisplaySettings.length){console.warn('Flew over');return;}
             var text;
-            console.log(o);
+            // console.log(o);
             switch(o){
                 case 'forecast':
                 text = forecast(values[o]);
@@ -189,13 +213,16 @@ var Weather = function(){
                 case 'astronomy':
                 text = astronomy(values[o]);
                 break;
+                case 'temp':
+                text = temp(values[o]);
+                break;
                 default:
                 text = '';
                 break;
             }
             if(document.querySelector(obj[o])){
                 document.querySelector(obj[o]).innerHTML = text;
-                console.log(document.querySelector(obj[o]));
+                // console.log(document.querySelector(obj[o]));
             }                      
         }
     }
