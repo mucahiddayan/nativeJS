@@ -17,9 +17,9 @@ var Weather = function(){
         forecast    : '#forecast',
         wind        : '#wind',      
     },
-
+    
     __icons = {
-
+        
     },
     
     __forecastLimit = 10,
@@ -56,26 +56,26 @@ var Weather = function(){
         
         return this;     
     }
-
+    
     this.setImgSize = function(imgSize){
         __imgSize = imgSize;
     }
-
+    
     this.setImgSrc = function(imgSrc){
         __imageSrc = imgSrc;
     }
-
+    
     this.setIconHeight = function(iconHeight){
         __iconHeight = iconHeight;
     }
-
+    
     this.setIconWidth = function(iconWidth){
         __iconWidth = iconWidth;
     }
     this.setStartPos = function(startPos){
         __iconStartPos = Object.assign(__iconStartPos,startPos);
     }
-
+    
     this.setApiUrl = function(url){
         __apiUrl = url;
     }
@@ -117,26 +117,20 @@ var Weather = function(){
             wind        : temp.wind
         };
     }
-
+    
     String.prototype.toCamelCase = function(){
         return /\s/.test(this)?this.split(' ').reduce((f,s)=>f[0].toLowerCase()+f.substr(1,f.length-1)+s[0].toUpperCase()+s.substr(1,s.length-1)):this.toLowerCase();
     }
     
     /**
-     * 
-     * @param {object<forecast>[]} forecast 
-     */
+    * 
+    * @param {object<forecast>[]} forecast 
+    */
     var forecast = function(forecast){
         var box = boxStart('forecast');
         for(var day in forecast){
             if(day <= __forecastLimit){
-                box += `<div class="forecast-item">
-                ${getIcon("yahoo-"+forecast[day].code,forecast[day].text)}           
-                <div class="forecast-day">${forecast[day].day}</div>
-                <div class="forecast-date">${forecast[day].date}</div>
-                <div class="forecast-high">${fahrenheitToCelcius(forecast[day].high)}°C</div>
-                <div class="forecast-low">${fahrenheitToCelcius(forecast[day].low)}°C</div>
-                </div>`;
+                box += forecasts('forecast',forecast[day],"yahoo-"+forecast[day].code,forecast[day].text,['text','code']);                
             }
         }
         box += boxEnd();
@@ -145,27 +139,35 @@ var Weather = function(){
     
     var astronomy = function(astronomy){
         var box = boxStart('astronomy');
-        box+= `<div class="sunrise">
-        ${getIcon('sunrise')}
-        <div id="text">${astronomy.sunrise}</div>
-        </div>
-        <div class="sunset">
-        <div id="img">${getIcon('sunset')}</div>
-        <div id="text">${astronomy.sunset}</div>
-        </div>`;
+        box += itemsBox("astronomy",astronomy);
         box+= boxEnd();
         return box;
     }
     
     var atmosphere = function(atmosphere){
+        var box = boxStart('atmosphere');
+        box += itemsBox("atmosphere",atmosphere);
+        
         var text = `${atmosphere.humidity} ${atmosphere.pressure} ${atmosphere.rising} ${atmosphere.visibility}`;
         return text;
     }
-
+    
+    var forecasts = function(box,items,icon,iconTitle=icon,exc=[]){
+        var itemBox = `<div class="${box}-item"><div class="${box} icon">${getIcon(icon,iconTitle)}</div>`;
+        for(let item in items){
+            console.log(exc,item,!exc.includes(item));
+            if(!exc.includes(item)){
+                itemBox += `<div class="${box}-${item} text">${items[item]}</div>`;
+            }
+        }
+        itemBox += `</div>`;
+        return itemBox;
+    }
+    
     var getIcon = function(code,title=code){
         return `<div title="${title}" class="weather-icon"><i class="wi wi-${code}"></i></div>`;
     }
-
+    
     var boxStart = function(id){
         return `<div id="${id}-wrapper"><div id="${id}">`;
     }
@@ -173,7 +175,7 @@ var Weather = function(){
     var boxEnd = function(){
         return '</div></div>';
     }
-
+    
     var temp = function(temp){
         return temp+'°C';
     }
