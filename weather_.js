@@ -17,23 +17,12 @@ var Weather = function(){
         forecast    : '#forecast',
         wind        : '#wind',      
     },
-    __imagePositions = {
-        rain : [5,3],//'-75px -310px',
-        showers:[3,3],//'-250px -310px',
-        partlyCloudy:[5,2], //'-75px -390px',
-        mostlyCloudy:[5,2],//'-75px -390px',
-        mostlySunny:[4,5],//'-157px -127px',
-        scatteredShowers:[2,4],// '-350px -220px',
-        sunny : [5,5],// '-67px -127px',
-        thunderstorms : [2,1],// '-350px -475px'
-        
+
+    __icons = {
+
     },
-    __imageSrc = 'images/weathericons.svg',
-    __forecastLimit = 10,
-    __iconHeight = 95,
-    __iconWidth = 87,
-    __iconStartPos = {x:160,y:135},
     
+    __forecastLimit = 10,
     __results = [],
     __result;
     
@@ -102,7 +91,8 @@ var Weather = function(){
             sendQuery().then(res=>{
                 if(res.query.results == null){console.warn(`No results for "${__city}"`);return;}
                 var values = extractWeatherInformations(res);
-                console.log(values);               
+                console.log(values);
+                console.log(res);               
                 toDisplay(options,values);
             });
         }
@@ -141,7 +131,7 @@ var Weather = function(){
         for(var day in forecast){
             if(day <= __forecastLimit){
                 box += `<div class="forecast-item">
-                ${getImage(forecast[day].text)}           
+                ${getIcon("yahoo-"+forecast[day].code,forecast[day].text)}           
                 <div class="forecast-day">${forecast[day].day}</div>
                 <div class="forecast-date">${forecast[day].date}</div>
                 <div class="forecast-high">${fahrenheitToCelcius(forecast[day].high)}°C</div>
@@ -156,11 +146,11 @@ var Weather = function(){
     var astronomy = function(astronomy){
         var box = boxStart('astronomy');
         box+= `<div class="sunrise">
-        ${getImage('sunrise')}
+        ${getIcon('sunrise')}
         <div id="text">${astronomy.sunrise}</div>
         </div>
         <div class="sunset">
-        <div id="img">${getImage('sunset')}</div>
+        <div id="img">${getIcon('sunset')}</div>
         <div id="text">${astronomy.sunset}</div>
         </div>`;
         box+= boxEnd();
@@ -172,20 +162,10 @@ var Weather = function(){
         return text;
     }
 
-    var getImage = function(id){
-        var pos = __imagePositions[id.toCamelCase()];
-        if(typeof pos == 'undefined'){
-            console.warn(`There is no image for ${id.toCamelCase()}`);
-            pos = [4,1];
-        }
-        
-        return `<div title="${id}" class="weather-icon" style="background:url('${__imageSrc}') ${getImgPosition(pos)};width:80px;height:80px;"></div>`;
+    var getIcon = function(code,title=code){
+        return `<div title="${title}" class="weather-icon"><i class="wi wi-${code}"></i></div>`;
     }
 
-    var getImgPosition = function(pos){
-        return `${(pos[0]-1)*__iconWidth+__iconStartPos.x}px ${(pos[1]-1)*__iconHeight+__iconStartPos.y}px`;
-    }
-    
     var boxStart = function(id){
         return `<div id="${id}-wrapper"><div id="${id}">`;
     }
