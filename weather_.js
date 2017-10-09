@@ -17,11 +17,15 @@ var Weather = function(){
         forecast    : '#forecast',
         wind        : '#wind',      
     },
-    
-    __icons = {
-        
+
+    __runs = {
+        atmosphere  : __atmosphere,
+        astronomy   : __astronomy,
+        temp        : __temp,
+        forecast    : __forecasts,
+        wind        : __wind,      
     },
-    
+       
     __forecastLimit = 10,
     __results = [],
     __result;
@@ -56,26 +60,7 @@ var Weather = function(){
         
         return this;     
     }
-    
-    this.setImgSize = function(imgSize){
-        __imgSize = imgSize;
-    }
-    
-    this.setImgSrc = function(imgSrc){
-        __imageSrc = imgSrc;
-    }
-    
-    this.setIconHeight = function(iconHeight){
-        __iconHeight = iconHeight;
-    }
-    
-    this.setIconWidth = function(iconWidth){
-        __iconWidth = iconWidth;
-    }
-    this.setStartPos = function(startPos){
-        __iconStartPos = Object.assign(__iconStartPos,startPos);
-    }
-    
+          
     this.setApiUrl = function(url){
         __apiUrl = url;
     }
@@ -93,7 +78,7 @@ var Weather = function(){
                 var values = extractWeatherInformations(res);
                 console.log(values);
                 console.log(res);               
-                toDisplay(options,values);
+                __display(options,values);
             });
         }
     }
@@ -112,7 +97,7 @@ var Weather = function(){
         return {
             astronomy   : temp.astronomy,
             atmosphere  : temp.atmosphere,
-            temp        : fahrenheitToCelcius(temp.item.condition.temp),
+            temp        : {value:temp.item.condition.temp,code:temp.item.condition.code,text:temp.item.condition.text},
             forecast    : temp.item.forecast,
             wind        : temp.wind
         };
@@ -126,44 +111,51 @@ var Weather = function(){
     * 
     * @param {object<forecast>[]} forecast 
     */
-    var forecast = function(forecast){
+    var __forecasts = function(forecasts){
         var box = boxStart('forecast');
-        for(var day in forecast){
-            if(day <= __forecastLimit){
-                box += forecasts('forecast',forecast[day],"yahoo-"+forecast[day].code,forecast[day].text,['text','code']);                
+        for(var forecast in forecasts){
+            if(forecast <= __forecastLimit){
+                box += __forecast(forecasts[forecast]);        
             }
         }
         box += boxEnd();
         return box;
     }
-    
-    var astronomy = function(astronomy){
-        var box = boxStart('astronomy');
-        box += itemsBox("astronomy",astronomy);
-        box+= boxEnd();
+
+    var __forecast = function(forecast){
+        var box = `<div class="forecast-item">
+                    <h2 title="${forecast.date}">${forecast.day}</h2>
+                    <div id="forecast-icon">${getIcon(`yahoo-${forecast.code}`,forecast.text)}</div>
+                    <div id="forecast-heigh" title="High">${fahrenheitToCelcius(forecast.high)}°C</div>
+                    <div id="forecast-low" title="Low">${fahrenheitToCelcius(forecast.low)}°C</div>
+                   </div>`;
         return box;
     }
-    
-    var atmosphere = function(atmosphere){
-        var box = boxStart('atmosphere');
-        box += itemsBox("atmosphere",atmosphere);
-        
-        var text = `${atmosphere.humidity} ${atmosphere.pressure} ${atmosphere.rising} ${atmosphere.visibility}`;
-        return text;
+
+    var __atmosphere = function(atmosphere){
+        console.log(atmosphere);
+    }
+
+    var __astronomy = function(astronomy){
+        console.log(astronomy);
+    }
+
+    var __temp = function(temp){
+        console.log(temp);
+    }
+
+    var __wind = function(wind){
+        console.log(wind);
     }
     
-    var forecasts = function(box,items,icon,iconTitle=icon,exc=[]){
-        var itemBox = `<div class="${box}-item"><div class="${box} icon">${getIcon(icon,iconTitle)}</div>`;
-        for(let item in items){
-            console.log(exc,item,!exc.includes(item));
-            if(!exc.includes(item)){
-                itemBox += `<div class="${box}-${item} text">${items[item]}</div>`;
-            }
-        }
-        itemBox += `</div>`;
-        return itemBox;
-    }
-    
+    /**
+     * 
+     * @param {string} code 
+     * @param {string} title 
+     * wi wi-wind from-DIRECTION-deg
+     * wi wi-yahoo-CODE
+     * wi wi-NAME
+     */
     var getIcon = function(code,title=code){
         return `<div title="${title}" class="weather-icon"><i class="wi wi-${code}"></i></div>`;
     }
@@ -174,37 +166,26 @@ var Weather = function(){
     
     var boxEnd = function(){
         return '</div></div>';
-    }
+    }    
     
-    var temp = function(temp){
-        return temp+'°C';
-    }
-    
-    var toDisplay = function(obj,values){
-        for(let o in obj){
-            if(obj.length >= __defaultDisplaySettings.length){console.warn('Flew over');return;}
-            var text;
-            // console.log(o);
+
+    /**
+     * 
+     * @param {Object} displays - name : CSS Selector - where the value has to be displayed on 
+     * @param {Object} values   - name : values - values to be displayed 
+     */
+    var __display = function(displays,values){
+        for(let o in displays){
+            if(displays.length >= __defaultDisplaySettings.length){console.warn('Flew over');return;}
+            var text = '';
             switch(o){
                 case 'forecast':
-                text = forecast(values[o]);
-                break;
-                case 'atmosphere':
-                text = atmosphere(values[o]);
-                break;
-                case 'astronomy':
-                text = astronomy(values[o]);
-                break;
-                case 'temp':
-                text = temp(values[o]);
-                break;
-                default:
-                text = '';
-                break;
+                text = __forecasts(values[o]);
             }
-            if(document.querySelector(obj[o])){
-                document.querySelector(obj[o]).innerHTML = text;
-                // console.log(document.querySelector(obj[o]));
+            // text = __runs[o](values[o]);
+            if(document.querySelector(displays[o])){
+                document.querySelector(displays[o]).innerHTML = text;
+                // console.log(document.querySelector(displays[o]));
             }                      
         }
     }
