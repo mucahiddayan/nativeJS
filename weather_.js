@@ -17,7 +17,7 @@ var Weather = function(){
         forecast    : '#forecast',
         wind        : '#wind',      
     },
-
+    
     __runs = {
         atmosphere  : __atmosphere,
         astronomy   : __astronomy,
@@ -25,7 +25,7 @@ var Weather = function(){
         forecast    : __forecasts,
         wind        : __wind,      
     },
-       
+    
     __forecastLimit = 10,
     __results = [],
     __result;
@@ -60,7 +60,7 @@ var Weather = function(){
         
         return this;     
     }
-          
+    
     this.setApiUrl = function(url){
         __apiUrl = url;
     }
@@ -121,41 +121,66 @@ var Weather = function(){
         box += boxEnd();
         return box;
     }
-
+    
     var __forecast = function(forecast){
-        var box = `<div class="forecast-item">
-                    <h2 title="${forecast.date}">${forecast.day}</h2>
-                    <div id="forecast-icon">${getIcon(`yahoo-${forecast.code}`,forecast.text)}</div>
-                    <div id="forecast-heigh" title="High">${fahrenheitToCelcius(forecast.high)}°C</div>
-                    <div id="forecast-low" title="Low">${fahrenheitToCelcius(forecast.low)}°C</div>
-                   </div>`;
+        var box = `<div class="forecast-item item">
+        <h2 title="${forecast.date}">${forecast.day}</h2>
+        <div id="forecast-icon">${getIcon(`yahoo-${forecast.code}`,forecast.text)}</div>
+        <div id="forecast-heigh" title="High">${fahrenheitToCelcius(forecast.high)}°C</div>
+        <div id="forecast-low" title="Low">${fahrenheitToCelcius(forecast.low)}°C</div>
+        </div>`;
         return box;
     }
-
+    
     var __atmosphere = function(atmosphere){
-        console.log(atmosphere);
+        return createItemFor('atmosphere',atmosphere);       
     }
-
+    
     var __astronomy = function(astronomy){
-        console.log(astronomy);
+        return createItemFor('astronomy',astronomy);
     }
-
+    
     var __temp = function(temp){
-        console.log(temp);
+        var box = boxStart('temp');        
+            box+= `<div class="temp-item item">
+                    <div class="temp-item-icon">${getIcon('yahoo-'+temp.code,temp.text)}</div>
+                    <div class="temp-item-chill" title="Temp">${fahrenheitToCelcius(temp.value)}°C</div>
+                    </div>`;
+        return box;
     }
-
+    
     var __wind = function(wind){
-        console.log(wind);
+        var box = boxStart('wind');
+        var icon = `wind from-${wind.direction}-deg`
+            box+= `<div class="wind-item item">
+                    <div class="wind-item-icon">${getIcon(icon,wind.direction)}</div>
+                    <div class="wind-item-chill" title="Speed">${wind.speed}km/h</div>
+                    <div class="wind-item-chill" title="Chill">${fahrenheitToCelcius(wind.chill)}°C</div>
+                    </div>`;
+        return box;
+    }
+    
+    var createItemFor = function(fr,parent){
+        var box = boxStart(fr);
+        for(var el in parent){ 
+            box += `<div class="${fr}-item item">
+            <div id="item-icon">${getIcon(el)}</div>
+            <div id="item-text">${parent[el]}</div>
+            </div>
+            `;
+        }
+        box += boxEnd();
+        return box;
     }
     
     /**
-     * 
-     * @param {string} code 
-     * @param {string} title 
-     * wi wi-wind from-DIRECTION-deg
-     * wi wi-yahoo-CODE
-     * wi wi-NAME
-     */
+    * 
+    * @param {string} code 
+    * @param {string} title 
+    * wi wi-wind from-DIRECTION-deg
+    * wi wi-yahoo-CODE
+    * wi wi-NAME
+    */
     var getIcon = function(code,title=code){
         return `<div title="${title}" class="weather-icon"><i class="wi wi-${code}"></i></div>`;
     }
@@ -168,12 +193,12 @@ var Weather = function(){
         return '</div></div>';
     }    
     
-
+    
     /**
-     * 
-     * @param {Object} displays - name : CSS Selector - where the value has to be displayed on 
-     * @param {Object} values   - name : values - values to be displayed 
-     */
+    * 
+    * @param {Object} displays - name : CSS Selector - where the value has to be displayed on 
+    * @param {Object} values   - name : values - values to be displayed 
+    */
     var __display = function(displays,values){
         for(let o in displays){
             if(displays.length >= __defaultDisplaySettings.length){console.warn('Flew over');return;}
@@ -181,6 +206,19 @@ var Weather = function(){
             switch(o){
                 case 'forecast':
                 text = __forecasts(values[o]);
+                break;
+                case 'atmosphere':
+                text = __atmosphere(values[o]);
+                break;
+                case 'astronomy':
+                text = __astronomy(values[o]);
+                break;
+                case 'temp':
+                text = __temp(values[o]);
+                break;
+                case 'wind':
+                text = __wind(values[o]);
+                break;
             }
             // text = __runs[o](values[o]);
             if(document.querySelector(displays[o])){
