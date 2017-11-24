@@ -9,7 +9,10 @@
     <link href="css/weather-icons-wind.min.css" rel="stylesheet"/>
     <script src="weather.js"></script>   
     <script src="apixu_weather.js"></script>   
-    <script src="Object.deepAssign.js"></script>   
+    <script src="Object.deepAssign.js"></script> 
+    <script type="module">
+        import {Man} from './Man.js';
+    </script>  
     <style>
         body>div>div {
             width: 200px;
@@ -62,11 +65,8 @@
     <input type="text" id="city"/><button onclick="getWeatherFromCurrentPosition();">Current Position</button>
     <input type="number" min="0" max="60" value="0" id="interval"/>
     <div>
-        <div id="forecast"    ></div>
-        <div id="atmosphere"  ></div>
-        <div id="astronomy"   ></div>
-        <div id="temp_c"        ></div>        
-        <div id="wind"        ></div>
+        
+        
     </div>
     
 </body>
