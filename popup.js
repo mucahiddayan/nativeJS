@@ -27,49 +27,76 @@ function PopUp(id) {
     throw new Error("PopUp must have an ID!");
   }
   let box = document.querySelector(".fixed-box#" + id);
-  if (box) {
-    console.warn(`A PopUp with ID "${id}" exists already!`);
-    this.box = box;
-  } else {
-    this.box = createFixedBox(id);
-    document.body.appendChild(this.box);
-  }
+
+  this.getBox = function() {
+    if (box && typeof box !== "string") {
+      return box;
+    } else if (box === "removed") {
+      return null;
+    } else {
+      box = createFixedBox(id);
+      document.body.appendChild(box);
+      return box;
+    }
+  };
+
+  this.remove = function() {
+    if (!this.getBox()) {
+      return;
+    }
+    this.getBox().remove();
+    box = "removed";
+  };
+
+  Object.freeze(this);
 }
 
 PopUp.prototype.setPosition = function(position = "bottom") {
-  clearPositions(this.box);
-  this.box.style[position] = 0;
+  if (!this.getBox()) {
+    return;
+  }
+  clearPositions(this.getBox());
+  this.getBox().style[position] = 0;
   return this;
 };
 
 PopUp.prototype.setStyle = function(style = {}) {
+  if (!this.getBox()) {
+    return;
+  }
   for (let s of Object.keys(style)) {
-    this.box.style[s] = style[s];
+    this.getBox().style[s] = style[s];
   }
   return this;
 };
 
 PopUp.prototype.addText = function(text = "") {
+  if (!this.getBox()) {
+    return;
+  }
   let textBox = createContentBox("fb text-box");
   textBox.innerText = text;
-  this.box.appendChild(textBox);
+  this.getBox().appendChild(textBox);
   return this;
 };
 
-PopUp.prototype.addHTML = function(html=''){
-	let htmlBox = createContentBox('fb html-box');
-	htmlBox.innerHTML = html;
-	this.box.appendChild(htmlBox);
-	return this;
-}
+PopUp.prototype.addHTML = function(html = "") {
+  if (!this.getBox()) {
+    return;
+  }
+  let htmlBox = createContentBox("fb html-box");
+  htmlBox.innerHTML = html;
+  this.getBox().appendChild(htmlBox);
+  return this;
+};
 
 var pup;
 document.addEventListener("DOMContentLoaded", () => {
   pup = new PopUp("datenschutz");
   pup.setPosition("bottom").setStyle({
     width: "100%",
-	height: "30px",
-	left:0,
+    height: "30px",
+    left: 0,
     backgroundColor: "red"
   });
 });
