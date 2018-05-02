@@ -1,9 +1,9 @@
-var Weather = function(){
+const Weather = function(){
     /**
     * __@var - private variable prefix
     * 
     */
-    var
+    let
     __this = this,    
     __apiUrl = `https://query.yahooapis.com/v1/public/yql?q=`,
     
