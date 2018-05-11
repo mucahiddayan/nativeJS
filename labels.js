@@ -1,5 +1,6 @@
 /**
  * @author Mücahid Dayan
+ * @class Label
  */
 
 function Label(input,delimeter=','){
@@ -16,7 +17,7 @@ Label.prototype.wrap = function(){
     this.wrapper.className = 'labels-wrapper';
     this.input.parentNode.insertBefore(this.wrapper,this.input);
     this.wrapper.appendChild(this.input);
-}
+};
 
 Label.prototype.init = function(){
     this.input.style.display = 'none';
@@ -40,28 +41,28 @@ Label.prototype.init = function(){
             this.createdInput.value = '';
         }
     });    
-}
+};
 
 Label.prototype.changePlaceholder = function(placeholder){
     this.createdInput.placeholder = this.createdInput.title = placeholder;
-}
+};
 
 Label.prototype.updateValue = function(){
     this.input.value = uniqArray(this.labels).join(this.delimeter);
     triggerOnInputEvent(this.input);
-}
+};
 
 Label.prototype.update = function(){
     this.updateLabels();
     this.createLabels();
     this.initLabelsbox();
     this.addEventListenerToCloseButtons();
-}
+};
 
 Label.prototype.updateLabels = function(){
     this.labels = splitToUniqArray(this.input.value,this.delimeter);
     // this.labels = uniqArray(this.labels);
-}
+};
 
 Label.prototype.createLabels = function(){
     this.labelsBox =  `<div class="label-box">`;
@@ -75,13 +76,13 @@ Label.prototype.createLabels = function(){
 
     });
     this.labelsBox += '</div>';
-}
+};
 
 Label.prototype.addCallbackToCloseButtons = function(fn){
     if(fn && typeof fn === 'function'){
         this.closebuttonCallback = fn;
     }
-}
+};
 
 Label.prototype.addEventListenerToCloseButtons = function(){
     let closeButtons = this.input.parentNode.querySelectorAll('.label-box .remove-label');
@@ -99,7 +100,7 @@ Label.prototype.addEventListenerToCloseButtons = function(){
             fn(button);            
         });
     });
-}
+};
 
 Label.prototype.initLabelsbox = function(){
     let lb = this.input.parentNode.querySelector('.label-box');
@@ -107,7 +108,7 @@ Label.prototype.initLabelsbox = function(){
             lb.remove();
         }
         this.input.insertAdjacentHTML('afterend', this.labelsBox);
-}
+};
 
 function splitToUniqArray(string,delimeter=','){
     return uniqArray(string.split(delimeter));
@@ -132,7 +133,7 @@ function triggerOnInputEvent(el) {
 HTMLElement.prototype.splitIntoLabels = function (delimeter = ',') {
     let label = new Label(this,delimeter);
     return label;
-}
+};
 
 
 
