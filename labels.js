@@ -31,13 +31,14 @@ Label.prototype.init = function(){
     this.input.addEventListener('input', () => this.update());
     this.createdInput.addEventListener('keydown',(e)=>{
         if(e.code === 'Enter'){
+            e.preventDefault();
             let labelsToAdd = splitToUniqArray(this.createdInput.value,this.delimeter);            
             this.labels.push(...labelsToAdd);            
             this.updateValue();
             this.update();
-            
-            console.log(labelsToAdd,this.labels);
-           
+            if(this.inputEnterCallback && typeof this.inputEnterCallback === 'function'){
+                labelsToAdd.map(label=>this.inputEnterCallback(label));
+            }    
             this.createdInput.value = '';
         }
     });    
@@ -83,6 +84,12 @@ Label.prototype.addCallbackToCloseButtons = function(fn){
         this.closebuttonCallback = fn;
     }
 };
+
+Label.prototype.addCallbackToInputEnter = function(fn){
+    if(fn && typeof fn === 'function'){
+        this.inputEnterCallback = fn;
+    }
+}
 
 Label.prototype.addEventListenerToCloseButtons = function(){
     let closeButtons = this.input.parentNode.querySelectorAll('.label-box .remove-label');

@@ -8,6 +8,9 @@
      test1.changePlaceholder('Hinzufügen');
     console.log( test1);
      test1.addCallbackToCloseButtons((e) => console.log(e+' clicked'));
+     test1.addCallbackToInputEnter((e) => {
+         document.body.insertAdjacentHTML('afterbegin','<div>'+e+'</div>')
+     });
 
      let test2 = document.getElementById('test2').splitIntoLabels();
      test2.changePlaceholder('Hinzufügen');
