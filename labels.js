@@ -3,14 +3,12 @@
  */
 
 function Label(input,delimeter=','){
-    console.log(input);
     if(!(input instanceof HTMLElement) || input.nodeName !== 'INPUT'){
         throw new Error('It is not an HTMLElement or Input Element');
     }
     this.input = input;
     this.delimeter = delimeter;
     this.init();
-    
 }
 
 Label.prototype.wrap = function(){
@@ -22,11 +20,12 @@ Label.prototype.wrap = function(){
 
 Label.prototype.init = function(){
     this.input.style.display = 'none';
+    
     this.labels;
     this.wrap();
     this.update();
     this.createdInput = document.createElement('input');
-    this.createdInput.placeholder = 'Add';
+    this.createdInput.placeholder = this.createdInput.title = 'Add';
     this.input.insertAdjacentElement('beforebegin', this.createdInput);
     this.input.addEventListener('input', () => this.update());
     this.createdInput.addEventListener('keydown',(e)=>{
@@ -43,9 +42,13 @@ Label.prototype.init = function(){
     });    
 }
 
+Label.prototype.changePlaceholder = function(placeholder){
+    this.createdInput.placeholder = this.createdInput.title = placeholder;
+}
+
 Label.prototype.updateValue = function(){
     this.input.value = uniqArray(this.labels).join(this.delimeter);
-    triggerOnInput(this.input);
+    triggerOnInputEvent(this.input);
 }
 
 Label.prototype.update = function(){
@@ -74,14 +77,22 @@ Label.prototype.createLabels = function(){
     this.labelsBox += '</div>';
 }
 
+Label.prototype.addCallbackToCloseButtons = function(fn){
+    if(fn && typeof fn === 'function'){
+        this.closebuttonCallback = fn;
+    }
+}
+
 Label.prototype.addEventListenerToCloseButtons = function(){
-    let closeButtons = document.querySelectorAll('.label-box .remove-label');
+    let closeButtons = this.input.parentNode.querySelectorAll('.label-box .remove-label');
     let fn = (button)=>{
-        console.info('remove-label clicked');
             this.labels.splice(this.labels.indexOf(button.dataset.label),1);
             button.removeEventListener('click',fn);
             this.updateValue();
             this.update();
+            if(this.closebuttonCallback && typeof this.closebuttonCallback === 'function'){
+                this.closebuttonCallback(button.dataset.label);
+            }
     };
     [].map.call(closeButtons,button=>{
         button.addEventListener('click',()=>{
@@ -108,19 +119,21 @@ function uniqArray(array) {
     return temp;
 }
 
-
-
-HTMLElement.prototype.stringToLabel = function (delimeter = ',') {
-    let label = new Label(this,delimeter);
-}
-
-function triggerOnInput(el) {
+function triggerOnInputEvent(el) {
     var event = new Event('input', {
         'bubbles': true,
         'cancelable': true
     });
     el.dispatchEvent(event);
-    console.info('onInput dispatched');
 }
+
+
+
+HTMLElement.prototype.splitIntoLabels = function (delimeter = ',') {
+    let label = new Label(this,delimeter);
+    return label;
+}
+
+
 
 
