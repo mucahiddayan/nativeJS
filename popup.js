@@ -22,6 +22,10 @@ function createContentBox(className = "content-box") {
   return contentBox;
 }
 
+function keepClosed(id) {
+  return localStorage.getItem(id) === "closed";
+}
+
 function PopUp(id) {
   if (!id) {
     throw new Error("PopUp must have an ID!");
@@ -39,6 +43,10 @@ function PopUp(id) {
       return box;
     }
   };
+
+  if (keepClosed(id)) {
+    this.close();
+  }
 
   this.remove = function() {
     if (!this.getBox()) {
@@ -90,10 +98,19 @@ PopUp.prototype.addHTML = function(html = "") {
   return this;
 };
 
-var pup;
+PopUp.prototype.close = function() {
+  if (!this.getBox()) {
+    return;
+  }
+  this.setStyle({ opacity: 0 });
+  let id = this.getBox().id;
+  localStorage.setItem(id, "closed");
+};
+
+var datenschutz;
 document.addEventListener("DOMContentLoaded", () => {
-  pup = new PopUp("datenschutz");
-  pup.setPosition("bottom").setStyle({
+  datenschutz = new PopUp("datenschutz");
+  datenschutz.setPosition("bottom").setStyle({
     width: "100%",
     height: "30px",
     left: 0,
