@@ -28,6 +28,7 @@ function wrapWith(element, wrapperElement) {
 
 Label.prototype.init = function() {
   this.input.style.display = "none";
+  
 
   this.labels;
   this.wrap();
@@ -36,6 +37,10 @@ Label.prototype.init = function() {
   this.createdInput = document.createElement("input");
   this.createdInput.placeholder = this.createdInput.title = "Add";
   this.createdInput.type = this.input.type;
+  if(this.input.pattern){
+    this.createdInput.pattern = this.input.pattern;
+  }
+  
   this.createdInput.required = true;
   this.input.insertAdjacentElement("beforebegin", this.createdInput);
   wrapWith(this.createdInput, "form");
@@ -79,8 +84,16 @@ Label.prototype.init = function() {
 };
 
 Label.prototype.changePlaceholder = function(placeholder) {
-  this.createdInput.placeholder = this.createdInput.title = placeholder;
+  this.createdInput.placeholder  = placeholder;
 };
+
+Label.prototype.changeTitle = function(title){
+  this.createdInput.title = title;
+}
+
+Label.prototype.changePattern = function(pattern){
+  this.createdInput.pattern = pattern;
+}
 
 Label.prototype.updateValue = function() {
   this.input.value = uniqArray(this.labels).join(this.delimeter);

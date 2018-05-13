@@ -9,13 +9,33 @@
     <script src="popup.js"></script>
     <script src="labels.js"></script>
     <script src="main.js"></script>
+    <style>
+        .labels-wrapper .label-box {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .labels-wrapper .label {
+            display:flex;
+            padding: 5px;
+            margin: 5px;
+            box-shadow: 0px 0px 0px 1px #acacac;
+        }
+
+        .remove-label{
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.getElementsByClassName('options');
+    </script>
 </head>
 
 <body>
-    
-        <input id="test1" type="email" value="1,2,3,4,5" />
-        <input id="test2" value="1,2,3,4,5" />
-    
+    <form action="#" method="post">
+        <input id="useremail" name="options[username]" type="email" value="" />
+        <input id="username" name="options[useremail]" pattern="[a-z]{1,10}" value="" />
+    </form>
 </body>
 
 </html>
